@@ -1,0 +1,101 @@
+    <!-- templates/tickets/create_ticket.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h2>Create Support Ticket</h2>
+    
+    <div class="client-details" style="display: none;">
+        <h4>Client Information</h4>
+        <p><strong>Name:</strong> <span id="client-name"></span></p>
+        <p><strong>Email:</strong> <span id="client-email"></span></p>
+        <p><strong>Phone:</strong> <span id="client-phone"></span></p>
+    </div>
+    
+    {% crispy form %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        const clientSearch = $('.client-search');
+        const clientField = $('#id_client');
+        const clientDetails = $('.client-details');
+        
+        let searchTimeout;
+        
+        clientSearch.on('keyup', function() {
+            const query = $(this).val();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            // Remove existing suggestions
+            $('.search-suggestions').remove();
+            
+            // Only search if 4+ characters are entered
+            if (query.length >= 4) {
+                // Set a timeout to prevent excessive API calls
+                searchTimeout = setTimeout(function() {
+                    $.ajax({
+                        url: '{% url "client_search" %}',
+                        data: {
+                            'query': query
+                        },
+                        success: function(data) {
+                            // Create suggestions container
+                            const suggestions = $('<div class="search-suggestions"></div>');
+                            
+                            if (data.length > 0) {
+                                data.forEach(function(client) {
+                                    const item = $(`<div class="suggestion-item" data-id="${client.id}" 
+                                                    data-name="${client.name}" data-email="${client.email}" 
+                                                    data-phone="${client.phone}">${client.name}</div>`);
+                                    
+                                    item.on('click', function() {
+                                        const clientId = $(this).data('id');
+                                        const clientName = $(this).data('name');
+                                        const clientEmail = $(this).data('email');
+                                        const clientPhone = $(this).data('phone');
+                                        
+                                        // Set the client ID in the hidden field
+                                        clientField.val(clientId);
+                                        
+                                        // Update search field with client name
+                                        clientSearch.val(clientName);
+                                        
+                                        // Show client details
+                                        $('#client-name').text(clientName);
+                                        $('#client-email').text(clientEmail);
+                                        $('#client-phone').text(clientPhone);
+                                        clientDetails.show();
+                                        
+                                        // Remove suggestions
+                                        suggestions.remove();
+                                    });
+                                    
+                                    suggestions.append(item);
+                                });
+                            } else {
+                                suggestions.append('<div class="no-results">No clients found</div>');
+                            }
+                            
+                            // Append suggestions after the search field
+                            clientSearch.after(suggestions);
+                        }
+                    });
+                }, 300);
+            }
+        });
+        
+        // Hide suggestions when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.client-search, .search-suggestions').length) {
+                $('.search-suggestions').remove();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+    "files.exclude": {
+        "**/CVS": false
+    },
+    "search.exclude": {
+        "**/bower_components": false,
+        "**/node_modules": false
+    }
+}
