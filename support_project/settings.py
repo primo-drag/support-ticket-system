@@ -67,8 +67,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-MICROSOFT_AUTH_CLIENT_ID = 'd44f5095-497c-4d48-a283-d939dab06e62'
-MICROSOFT_AUTH_CLIENT_SECRET = 'iDv8Q~fvhBfIicTsi4O~TiM_s-lHNUTju2ICLc8Q'
+MICROSOFT_AUTH_CLIENT_ID = 'client ID'
+MICROSOFT_AUTH_CLIENT_SECRET = 'client secret'
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma'  # Microsoft Account login
 
 # Crispy Forms
